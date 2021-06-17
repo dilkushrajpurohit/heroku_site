@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>My little chat app</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Viaoda+Libre&display=swap" rel="stylesheet">
+</head>
+<style>
+    h1{
+        text-align: center;
+        font-family: 'Viaoda Libre', cursive;
+
+    }
+  .chat-form{
+      margin-top: 200px;
+      justify-content: center;
+      margin-left: 200px;
+  }
+  .chat-input{
+      width: 800px;
+      height: 20px;
+background-color: violet;
+  }
+  .chat-submit{
+      width: 100px;
+      height: 30px;
+      background-color: violet;
+  }
+  .chat-dump{
+  height: 300px;
+  overflow-y: auto;
+  }
+</style>
+<body>
+  <h1>My little chat app</h1>
+  <div class="chat-dump"><h2>Hey welcome to this Chat room:) your friend connect soon</h2></div>
+  <form class="chat-form">
+
+    <label class="chat-label">
+      
+        Enter a message:
+        <input type="text" class="chat-input" placeholder="Entere your message">
+    </label>
+    <input type="submit" class="chat-submit" value="Send">
+  </form>
+
+  <script src="socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
