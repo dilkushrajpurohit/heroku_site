@@ -1,21 +1,16 @@
-const socket = io()
-const chat = document.querySelector('.chat-form')
-const chatInput = document.querySelector('.chat-input')
-chat.addEventListener('submit', e => {
-  e.preventDefault()
-  socket.emit('chat', chatInput.value)
-  chatInput.value = ''
-})
-const chatDump = document.querySelector('.chat-dump')
-const render = ({message, id}) => {
-  const div = document.createElement('div')
-  div.classList.add('chat-message')
-  if (id === socket.id) { // broadcasted chat is from this client
-    div.classList.add('chat-message--user')
-  }
-  div.innerText = message // insert message into new div
-  chatDump.appendChild(div).style.backgroundColor='#0D866F'
-}
-socket.on('chat', data => {
-  render(data)
-})
+io.on("connection", function(socket) {
+
+  socket.on("user_join", function(data) {
+      this.username = data;
+      socket.broadcast.emit("user_join", data);
+  });
+
+  socket.on("chat_message", function(data) {
+      data.username = this.username;
+      socket.broadcast.emit("chat_message", data);
+  });
+
+  socket.on("disconnect", function(data) {
+      socket.broadcast.emit("user_leave", this.username);
+});
+});

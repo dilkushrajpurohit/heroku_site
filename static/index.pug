@@ -1,0 +1,194 @@
+doctype html
+
+html
+
+  head
+
+    title= title
+ 
+   link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
+ 
+   link(rel='stylesheet', href='/stylesheets/style.css')
+ 
+ body
+ 
+   block content
+ 
+   script(src='/socket.io/socket.io.js')
+ 
+   script(src='https://code.jquery.com/jquery-3.2.1.min.js')
+ 
+  script(src='/javascripts/chat_script.js')
+  extends layout
+
+block content
+
+  .container
+
+   .row 
+
+     h1 Using socket.io with NodeJS
+
+   .row
+
+    .panel.panel-default
+
+      .panel-heading #{title}
+
+        .js-userjoined
+
+        .js-usersinchat Users in Chat: 
+
+        .typing
+
+      .panel-body
+
+        .container#messages
+
+          .row.message-bubble
+
+        .panel-footer
+
+           .input-group
+
+             input#txtmessage.form-control(type='text')
+
+             span.input-group-btn
+
+               button#sendmessage.btn.btn-default(type='button') Send
+This code extend the layout code defined abve and ther are diffent divs with bootstart and soem custom classes. Import to noe  ere are .js-userjoined to show name oa user hwo jaoind chat
+
+.js-usersinchat Users in Chat: To display all the user present in chat.
+
+.typing  To display a message that a user si typeing a message.
+
+Inside panel.bod we defeind amessage containr. blwo it in panel-footer  an inuut with txtmesage is is defne so user cna type meeage here. Lastly  asend messga ebutton is createsd when user cliks on this buuton message is emittet to server.
+
+Create chat_script.js file
+
+Open javascrtips folder inside public folder. Add code belwo into it.
+
+/* @description: using socketio with nodejs
+ *  This script contains cleitn side functions for socket io chat and emits data to server and receive events and data from
+    server
+ */
+
+var socket = io.connect('http://localhost:3000');
+
+    var username = Math.random().toString(36).substr(2,8); 
+
+    socket.emit('join', { username: username });
+    
+    socket.on('user joined', function (data) {
+
+        $(".js-userjoined").html(data.username + ' Joined chat room');
+
+         $.each(data.users, function(index, user) { 
+
+             $(".js-usersinchat").append('<span id ='+user+'>&nbsp;&nbsp;<strong>'+user+'</strong></span>');
+
+         });
+
+     });
+     
+     socket.on('user disconnected', function (data) {
+
+        $("#"+data.username).remove();
+
+     });
+     
+    //an event emitted from server
+    socket.on('chat message', function (data) {
+
+        var string = '<div class="row message-bubble"><p class="text-muted">' + data.username+'</p><p>'+data.message+'</p></div>';
+
+        $('#messages').append(string);
+    
+    });
+
+
+    $(function () {
+        var timeout;
+
+        function timeoutFunction() {
+
+            typing = false;
+
+            socket.emit("typing", { message: '', username: '' });
+
+        }
+
+       $("#sendmessage").on('click', function () {
+
+         var message = $("#txtmessage").val();
+
+         $("#txtmessage").val('');
+
+         $('.typing').html("");
+
+         socket.emit('new_message', { message: message, username: username });
+
+       }); 
+  
+       
+    socket.on('typing', function (data) {
+    
+       if (data.username && data.message) {
+   
+            $('.typing').html("User: " + data.username+' '+ data.message);
+    
+      } else {
+ 
+           $('.typing').html("");
+ 
+       }
+ 
+   });
+
+       $('#txtmessage').keyup(function () {
+           console.log('typing');
+       
+           typing = true;
+       
+           socket.emit('typing', { message: 'typing...', username: username});
+       
+          clearTimeout(timeout);
+      
+          timeout = setTimeout(timeoutFunction, 2000);
+     
+      });
+   
+ });
+   
+
+var typing = false;
+
+var timeout = undefined;
+
+function timeoutFunction(){
+
+  typing = false;
+
+  socket.emit(noLongerTypingMessage);
+
+}
+
+function onKeyDownNotEnter(){
+
+  if(typing == false) {
+
+    typing = true
+
+    socket.emit();
+
+    timeout = setTimeout(timeoutFunction, 5000);
+
+  } else {
+
+    clearTimeout(timeout);
+
+    timeout = setTimeout(timeoutFunction, 5000);
+
+  }
+
+}

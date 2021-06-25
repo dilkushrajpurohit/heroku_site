@@ -1,20 +1,34 @@
-const express = require('express')
+const express = require("express")
+const app=express()
+    const http = require("http").Server(app);
+    const io = require("socket.io")(http);
+    const port = process.env.PORT || 3000;
+    const path=require('path')
 
-const app = express()
-const server = require('http').createServer(app)
-const path = require('path')
-const io = require('socket.io')(server)
+    app.use(express.static(path.join(__dirname, "static")));
+    app.get("/", function(req, res) {
+        res.sendFile(__dirname + "/static/index.html");
+    });
 
-app.use(
-  express.static( path.join(__dirname, '/static') )
-)
-io.on('connection', socket => {
-  console.log('Some client connected')
-  socket.on('chat', message => {
-    io.emit('chat', {message, id: socket.id})
-  })
-})
-const port = process.env.PORT || 3000
-server.listen(port, ()=> {
-  console.log('listening on: ', port)
-})
+
+    io.on("connection", function(socket) {
+
+        socket.on("user_join", function(data) {
+            this.username = data;
+            socket.broadcast.emit("user_join", data);
+        });
+
+        socket.on("chat_message", function(data) {
+            data.username = this.username;
+            socket.broadcast.emit("chat_message", data);
+        });
+
+        socket.on("disconnect", function(data) {
+            socket.broadcast.emit("user_leave", this.username);
+    	});
+    });
+
+    http.listen(port, function() {
+        console.log("Listening on *:" + port);
+    });
+  

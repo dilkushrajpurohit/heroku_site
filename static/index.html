@@ -1,54 +1,108 @@
-
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>My little chat app</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com">
+<html>
+    <head>
+        <title>Carrom|chat-app</title>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+        <link rel="stylesheet" href="index.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Viaoda+Libre&display=swap" rel="stylesheet">
-</head>
-<style>
-    h1{
-        text-align: center;
-        font-family: 'Viaoda Libre', cursive;
+        <link rel="icon" href="circle-cropped.png" type="image/icon type">
 
-    }
-  .chat-form{
-      margin-top: 200px;
-      justify-content: center;
-      margin-left: 200px;
-  }
-  .chat-input{
-      width: 800px;
-      height: 20px;
-background-color: violet;
-  }
-  .chat-submit{
-      width: 100px;
-      height: 30px;
-      background-color: violet;
-  }
-  .chat-dump{
-  height: 300px;
-  overflow-y: auto;
-  }
-</style>
-<body>
-  <h1>My little chat app</h1>
-  <div class="chat-dump"><h2>Hey welcome to this Chat room:) your friend connect soon</h2></div>
-  <form class="chat-form">
+<script src="//code.jquery.com/jquery.min.js"></script>
 
-    <label class="chat-label">
-      
-        Enter a message:
-        <input type="text" class="chat-input" placeholder="Entere your message">
-    </label>
-    <input type="submit" class="chat-submit" value="Send">
-  </form>
+        <style>
+    heu 
+        </style>
+    </head>
+    <body>
+        <div class="header">
+                      <img src="menu_open_black_24dp.svg" alt="" class="hamburger" onclick="toggle()">
 
-  <script src="socket.io/socket.io.js"></script>
-  <script src="script.js"></script>
-</body>
+            <img src="circle-cropped.png" alt="main" class="logo" id="logom">
+
+            <p class="para-logo">arrom</p>
+        </div>
+     
+        <div class="main-contain" id="main">
+         <h3 style="font-family: 'Viaoda Libre', cursive; font-size: 2.5rem"> <img src="group_add_black_24dp.svg"> Create Friendship Online (:)</h3>
+        </div>
+
+        <div class="div">
+        <ul class="messages"></ul>
+    </div>
+        <form class="form1" id="form45">
+            <input type="text" class="form-control input" id="exampleInputEmail1" aria-describedby="emailHelp"autocomplete="off" autofocus id="main-input" placeholder="Enter your message..."> 
+            <button><img src='send_black_24dp.svg'> </button>
+        </input>
+          
+        </form>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const form = document.querySelector("form");
+            const input = document.querySelector(".input");
+            const messages = document.querySelector(".messages");
+            const main_user=document.getElementById('main');
+            const username = prompt("Please enter a nickname: ", "");
+            const socket = io();
+
+            form.addEventListener("submit", function(event) {
+                event.preventDefault();
+
+                addMessage(username + ": " + input.value);
+
+                socket.emit("chat_message", {
+                    message: input.value
+                });
+
+                input.value = "";
+                return false;
+            }, false);
+
+            socket.on("chat_message", function(data) {
+                addMessage(data.username + ": " + data.message);
+            });
+
+            socket.on("user_join", function(data) {
+                addmain(data + " just joined the chat!");
+            });
+
+            socket.on("user_leave", function(data) {
+                addmain(data + " has left the chat.");
+            });
+
+            addmain("You have joined the chat as '" + username  + "'.");
+            socket.emit("user_join", username);
+
+            function addMessage(message) {
+                const li = document.createElement("li");
+                li.innerHTML = message;
+                messages.appendChild(li);
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+            function addmain(message){
+              const l=document.createElement('li');
+              l.innerHTML= "<img src='main.svg'>"+message;
+              main.appendChild(l)
+              window.scrollTo(0,document.body.scrollHeight)
+
+            }
+            $('.hamburger').click(function() {
+2
+ 
+3
+  $('.main-contain').toggleClass('opening');
+4
+  $(this).toggleClass('open');
+5
+     document.getElementById('logom').style.padding='-50px 50px'
+
+    document.getElementById('logom').style.height='5vh'
+
+6
+})
+            
+        </script>
+    </body>
 </html>
